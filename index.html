@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="container">
+        <h1>App Note</h1>
+        <button class="btn">Create Note</button>
+        <div class="notes-container">
+            <!-- <div class="note-wrapper">
+                <p contenteditable="true" class="input-box"></p>
+                <span class="iconDelete">&times;</span>
+            </div> -->
+        </div>
+    </div>
+
+    <script>
+        const notesContainer = document.querySelector('.notes-container');
+        const createBtn = document.querySelector('.btn');
+
+        function showNotes() {
+            notesContainer.innerHTML = localStorage.getItem("notes") || "";
+        }
+        showNotes();
+
+        function updateStorage() {
+            localStorage.setItem("notes", notesContainer.innerHTML);
+        }
+
+        createBtn.addEventListener('click', () => {
+            let noteWrapper = document.createElement('div');
+            noteWrapper.className = 'note-wrapper';
+
+            let inputBox = document.createElement('p');
+            inputBox.className = 'input-box';
+            inputBox.setAttribute('contenteditable', 'true');
+
+            let deleteBtn = document.createElement('span');
+            deleteBtn.className = 'iconDelete';
+            deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+
+            deleteBtn.addEventListener('click', () => {
+                notesContainer.removeChild(noteWrapper);
+                updateStorage();
+            });
+
+            inputBox.addEventListener('keyup', () => {
+                updateStorage();
+            });
+
+            noteWrapper.appendChild(inputBox);
+            noteWrapper.appendChild(deleteBtn);
+            notesContainer.appendChild(noteWrapper);
+            updateStorage();
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                document.execCommand("insertLineBreak");
+                event.preventDefault();
+            }
+        });
+
+        // Re-add event listeners to existing notes
+        notesContainer.querySelectorAll('.note-wrapper').forEach(wrapper => {
+            const deleteBtn = wrapper.querySelector('.iconDelete');
+            const inputBox = wrapper.querySelector('.input-box');
+
+            deleteBtn.addEventListener('click', () => {
+                notesContainer.removeChild(wrapper);
+                updateStorage();
+            });
+
+            inputBox.addEventListener('keyup', () => {
+                updateStorage();
+            });
+        });
+    </script>
+</body>
+</html>
